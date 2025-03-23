@@ -8,10 +8,15 @@ extends PanelContainer
 
 var sound_map : Dictionary[String, int] = {}
 
+var is_dragging_audio_progress_slider := false
+
 func _ready() -> void:
 	SourceCatalogue.source_removed.connect(_handle_source_removed)
 
 func _handle_source_removed(source: Source):
+	_unlist_source_audio(source)
+
+func _unlist_source_audio(source: Source):
 	for path in source.found_audio_file_paths:
 		if sound_map.has(path):
 			sound_map[path] -= 1
@@ -24,9 +29,31 @@ func _handle_source_removed(source: Source):
 					push_error("Unable to delete node: " + path)
 		else:
 			push_warning("Sound map has no entry for " + path)
-					
-func _path_to_node_name(path: String):
-	return path.replace("/", "-").replace(".", "_").replace(",", "_")
+	
+func _handle_source_ignore_changed(is_ignored: bool, source: Source):
+	if is_ignored:
+		_unlist_source_audio(source)
+	else:
+		for audio_path in source.found_audio_file_paths:
+			_handle_add_sound_file(audio_path)
+
+# Some characters are not supported by Godot node names, so we replace them
+# This could cause issues down the line if for example 2 files in the same folder have names like:
+#
+#	- my-file.wav
+#   - my,file.wav
+#
+# They would ultimately be treated as one file, causing untested behaviour
+# To circumvent this specific problem, every one of these special characters is replaced with another unique character
+func _path_to_node_name(path: String):	
+	return (
+		path 
+		.replace("/", "-")
+		.replace("\\", "--")
+		.replace(".", "_")
+		.replace(",", "__")
+		.replace(":", "___")
+	)
 
 func _on_add_source_button_pressed() -> void:
 	add_source_popup.show()
@@ -34,42 +61,63 @@ func _on_add_source_button_pressed() -> void:
 func _on_add_source_popup_close_requested() -> void:
 	add_source_popup.hide()
 
-func _on_add_source_popup_source_added(source_name: String, source_path: String) -> void:
-	var source = Source.new(source_path, source_name)
-	var is_success = source.async_find_sound_files(_handle_sound_file)
-	if is_success:
-		SourceCatalogue.sources.push_back(source)
-		source_list.add_child(source.create_component())
+func _on_add_source_popup_source_added(source: Source) -> void:
+	var source_component = source.create_component()
+	source.async_find_sound_files(_handle_add_sound_file, _handle_searching_finished, self)
+	source.ignore_changed.connect(_handle_source_ignore_changed)
+	SourceCatalogue.sources.push_back(source)
+	source_list.add_child(source_component)
 	
-func _handle_sound_file(file_path: String):
+func _handle_add_sound_file(file_path: String):
 	if sound_map.has(file_path):
 		sound_map[file_path] += 1
 	else:
 		sound_map[file_path] = 1
 		_add_new_sound_entry(file_path)
 
-func _add_new_sound_entry(file_path: String):
-	var button = Button.new()
-	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	button.text = file_path.split("/")[-1]
-	button.name = _path_to_node_name(file_path)
-	button.set_meta("audio_path", file_path)
-	audio_list.add_child(button)
-	button.pressed.connect(func(): _handle_button_press(button))
+func _handle_searching_finished(source: Source):
+	source.is_searching = false
 
-func _process(delta: float) -> void:
+func _add_new_sound_entry(file_path: String):
+	var container = HBoxContainer.new()
+	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var label_button = Button.new()
+	label_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var explorer_button = Button.new()
+	explorer_button.text = "Show in Explorer"
+	
+	label_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	label_button.text = file_path.split("/")[-1]
+	
+	container.name = _path_to_node_name(file_path)
+	container.set_meta("audio_path", file_path)
+	label_button.pressed.connect(func(): _handle_button_press(container.get_meta("audio_path")))
+	explorer_button.pressed.connect(func(): _show_in_explorer(container.get_meta("audio_path")))
+	container.add_child(label_button)
+	container.add_child(explorer_button)
+	audio_list.add_child(container)
+
+func _show_in_explorer(path_meta: Variant):
+	var full_file_path = path_meta
+	if full_file_path == null or full_file_path.is_empty():
+		push_error("Unable to find audio file as the path is not valid (null or empty)")
+		return
+	OS.shell_show_in_file_manager(full_file_path, true)
+		
+func _process(_delta: float) -> void:
+	if is_dragging_audio_progress_slider: return
 	if player.stream:
 		audio_progress_slider.value = player.get_playback_position() / (player.stream as AudioStream).get_length()
 	else:
 		audio_progress_slider.value = 0
 
-func _handle_button_press(button: Button):
+func _handle_button_press(path_meta: Variant):
 	if player.playing:
 		player.stop()
 	player.stream = null
 	player.stream_paused = false
 	
-	var full_file_path = button.get_meta("audio_path") as String
+	var full_file_path = path_meta
 	if full_file_path == null or full_file_path.is_empty():
 		push_error("Unable to play audio file as the path is not valid (null or empty)")
 		return
@@ -92,3 +140,16 @@ func _on_play_button_pressed() -> void:
 
 func _on_pause_button_pressed() -> void:
 	player.stream_paused = !player.stream_paused
+
+func _on_audio_progress_slider_drag_ended(value_changed: bool) -> void:
+	is_dragging_audio_progress_slider = false
+	if not player.stream or not value_changed: return
+	player.seek((player.stream as AudioStream).get_length() * audio_progress_slider.value)
+
+func _on_audio_progress_slider_drag_started() -> void:
+	is_dragging_audio_progress_slider = true
+	
+
+
+func _on_spin_box_value_changed(value: float) -> void:
+	AudioServer.set_bus_volume_db(0, value)

@@ -5,12 +5,10 @@
 [node name="AddSourcePopup" type="Window"]
 title = "Add Source"
 initial_position = 2
-size = Vector2i(500, 219)
-visible = false
+size = Vector2i(500, 327)
 wrap_controls = true
 transient = true
 exclusive = true
-force_native = true
 script = ExtResource("1_mybbk")
 
 [node name="Panel" type="PanelContainer" parent="."]
@@ -79,6 +77,50 @@ text = "Explorer"
 [node name="Sep1" type="Control" parent="Panel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="ChecksMargins" type="MarginContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer/ChecksMargins"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/ChecksMargins/VBoxContainer"]
+layout_mode = 2
+text = "Options:"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer/ChecksMargins/VBoxContainer"]
+layout_mode = 2
+
+[node name="AsyncIndexingCheckBox" type="CheckBox" parent="Panel/VBoxContainer/ChecksMargins/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/ChecksMargins/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "When turned on, will wait in between file iterations to allow the UI to update. This will elongate the needed time to finish indexing, but will prevent the window form being unresponsive."
+mouse_filter = 0
+text = "Asynchronous Indexing (?)"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/VBoxContainer/ChecksMargins/VBoxContainer"]
+layout_mode = 2
+
+[node name="RecursiveIndexingCheckBox" type="CheckBox" parent="Panel/VBoxContainer/ChecksMargins/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "When turned on, will iterate through sub-folders to find sound files."
+button_pressed = true
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/ChecksMargins/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "When turned on, will search sub-folders for sound-files."
+mouse_filter = 0
+text = "Recursive (?)"
 
 [node name="SubmitButtonMargins" type="MarginContainer" parent="Panel/VBoxContainer"]
 layout_mode = 2
