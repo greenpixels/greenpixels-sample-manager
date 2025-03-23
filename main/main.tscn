@@ -56,6 +56,10 @@ size_flags_horizontal = 3
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Panel"]
 layout_mode = 2
 
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/Panel/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Search ..."
+
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/Panel/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -111,16 +115,15 @@ suffix = "db"
 [node name="AddSourcePopup" parent="." instance=ExtResource("1_53q0u")]
 unique_name_in_owner = true
 visible = false
-force_native = false
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/MarginContainer/AddSourceButton" to="." method="_on_add_source_button_pressed"]
+[connection signal="text_changed" from="HBoxContainer/Panel/VBoxContainer/LineEdit" to="." method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/PauseButton" to="." method="_on_pause_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="drag_ended" from="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/MarginContainer/AudioProgressSlider" to="." method="_on_audio_progress_slider_drag_ended"]
 [connection signal="drag_started" from="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/MarginContainer/AudioProgressSlider" to="." method="_on_audio_progress_slider_drag_started"]
 [connection signal="value_changed" from="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
 [connection signal="close_requested" from="AddSourcePopup" to="." method="_on_add_source_popup_close_requested"]
-[connection signal="source_added" from="AddSourcePopup" to="." method="_on_add_source_popup_source_added"]

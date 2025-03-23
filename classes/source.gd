@@ -30,10 +30,6 @@ var open_search_calls = 0 :
 		open_search_calls = value
 		is_searching = open_search_calls != 0
 
-func _init(_source_path : String, _source_name : String) -> void:
-	source_name = _source_name
-	source_path = _source_path
-
 func create_component():
 	var container = HBoxContainer.new()
 	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -68,9 +64,9 @@ func create_component():
 	return container
 
 func _handle_delete(component: Node):
-	var index = SourceCatalogue.sources.find(self)
+	var index = SourceCatalogue.sources.array.find(self)
 	if index != -1:
-		SourceCatalogue.sources.remove_at(index)
+		SourceCatalogue.sources.array.remove_at(index)
 		SourceCatalogue.source_removed.emit(self)
 	component.queue_free()
 
