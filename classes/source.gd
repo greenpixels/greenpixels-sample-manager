@@ -45,7 +45,7 @@ func create_component():
 	var delete_button = Button.new()
 	delete_button.pressed.connect(func(): _handle_delete(container))
 	label_button.text = source_name.substr(0, 8) + ("" if source_name.length() < 8 else "...")
-	
+	label_button.tooltip_text = source_name
 	
 	search_ended.connect(func():
 		label_button.text = source_name.substr(0, 8) + ("" if source_name.length() < 8 else "...")

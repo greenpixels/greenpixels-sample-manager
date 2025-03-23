@@ -92,6 +92,7 @@ func _add_new_sound_entry(file_path: String):
 	
 	label_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	label_button.text = file_name.substr(0, 40) + ("" if file_name.length() < 40 else "...")
+	label_button.tooltip_text = file_name
 	
 	container.name = _path_to_node_name(file_path)
 	container.set_meta("audio_path", file_path)
