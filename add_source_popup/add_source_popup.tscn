@@ -1,0 +1,109 @@
+[gd_scene load_steps=2 format=3 uid="uid://64523seh2wqw"]
+
+[ext_resource type="Script" uid="uid://ck7w2qbs3l1cr" path="res://add_source_popup/add_source_popup.gd" id="1_mybbk"]
+
+[node name="AddSourcePopup" type="Window"]
+title = "Add Source"
+initial_position = 2
+size = Vector2i(500, 219)
+visible = false
+wrap_controls = true
+transient = true
+exclusive = true
+force_native = true
+script = ExtResource("1_mybbk")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="SourceNameInputMargins" type="MarginContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer/SourceNameInputMargins"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/SourceNameInputMargins/VBoxContainer"]
+layout_mode = 2
+text = "Name:"
+
+[node name="SourceNameInput" type="TextEdit" parent="Panel/VBoxContainer/SourceNameInputMargins/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Source Name"
+scroll_fit_content_height = true
+
+[node name="Sep2" type="Control" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PathInputMargins" type="MarginContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer/PathInputMargins"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/PathInputMargins/VBoxContainer"]
+layout_mode = 2
+text = "Path:"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer/PathInputMargins/VBoxContainer"]
+layout_mode = 2
+
+[node name="PathInput" type="TextEdit" parent="Panel/VBoxContainer/PathInputMargins/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "File Path"
+scroll_fit_content_height = true
+
+[node name="OpenFileDialogButton" type="Button" parent="Panel/VBoxContainer/PathInputMargins/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Explorer"
+
+[node name="Sep1" type="Control" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SubmitButtonMargins" type="MarginContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="SubmitButton" type="Button" parent="Panel/VBoxContainer/SubmitButtonMargins"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Add"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Open a Directory"
+force_native = true
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2
+use_native_dialog = true
+
+[connection signal="source_added" from="." to="." method="_on_source_added"]
+[connection signal="text_changed" from="Panel/VBoxContainer/SourceNameInputMargins/VBoxContainer/SourceNameInput" to="." method="_on_source_name_input_text_changed"]
+[connection signal="text_changed" from="Panel/VBoxContainer/PathInputMargins/VBoxContainer/HBoxContainer/PathInput" to="." method="_on_path_input_text_changed"]
+[connection signal="pressed" from="Panel/VBoxContainer/PathInputMargins/VBoxContainer/HBoxContainer/OpenFileDialogButton" to="." method="_on_open_file_dialog_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/SubmitButtonMargins/SubmitButton" to="." method="_on_submit_button_pressed"]
+[connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]

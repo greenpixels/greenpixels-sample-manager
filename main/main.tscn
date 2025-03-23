@@ -1,0 +1,114 @@
+[gd_scene load_steps=3 format=3 uid="uid://hbfp16i8sw8x"]
+
+[ext_resource type="PackedScene" uid="uid://64523seh2wqw" path="res://add_source_popup/add_source_popup.tscn" id="1_53q0u"]
+[ext_resource type="Script" uid="uid://de2n7pp8sca88" path="res://main/main.gd" id="1_pjrb6"]
+
+[node name="Main" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pjrb6")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+
+[node name="AddSourceButton" type="Button" parent="HBoxContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "+ Add Source"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="SourceList" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Panel" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Panel"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="AudioList" type="VBoxContainer" parent="HBoxContainer/Panel/VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/Panel/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="PauseButton" type="Button" parent="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "⏸"
+
+[node name="PlayButton" type="Button" parent="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "▶"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 10
+
+[node name="AudioProgressSlider" type="HSlider" parent="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+scrollable = false
+
+[node name="AddSourcePopup" parent="." instance=ExtResource("1_53q0u")]
+unique_name_in_owner = true
+force_native = false
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/MarginContainer/AddSourceButton" to="." method="_on_add_source_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/PauseButton" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Panel/VBoxContainer/MarginContainer2/HBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="close_requested" from="AddSourcePopup" to="." method="_on_add_source_popup_close_requested"]
+[connection signal="source_added" from="AddSourcePopup" to="." method="_on_add_source_popup_source_added"]
