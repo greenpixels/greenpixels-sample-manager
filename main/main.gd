@@ -5,9 +5,10 @@ extends PanelContainer
 @onready var audio_list := %AudioList
 @onready var player := %AudioStreamPlayer
 @onready var audio_progress_slider := %AudioProgressSlider
+@onready var search_input := %SearchInput
 
 var sound_map : Dictionary[String, int] = {}
-
+signal sound_map_changed
 var is_dragging_audio_progress_slider := false
 
 func _ready() -> void:
@@ -30,6 +31,7 @@ func _unlist_source_audio(source: Source):
 					push_error("Unable to delete node: " + path)
 		else:
 			push_warning("Sound map has no entry for " + path)
+	sound_map_changed.emit()
 	
 func _handle_source_ignore_changed(is_ignored: bool, source: Source):
 	if is_ignored:
@@ -74,6 +76,7 @@ func _handle_add_sound_file(file_path: String):
 	else:
 		sound_map[file_path] = 1
 		_add_new_sound_entry(file_path)
+	sound_map_changed.emit()
 
 func _handle_searching_finished(source: Source):
 	source.is_searching = false
@@ -88,7 +91,7 @@ func _add_new_sound_entry(file_path: String):
 	explorer_button.text = "Show in Explorer"
 	
 	label_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	label_button.text = file_name
+	label_button.text = file_name.substr(0, 40) + ("" if file_name.length() < 40 else "...")
 	
 	container.name = _path_to_node_name(file_path)
 	container.set_meta("audio_path", file_path)
@@ -182,3 +185,7 @@ func _on_spin_box_value_changed(value: float) -> void:
 
 func _on_line_edit_text_changed(new_text: String) -> void:
 	FilterContext.search_value = new_text
+
+
+func _on_sound_map_changed() -> void:
+	search_input.placeholder_text = "Search " + str(sound_map.size()) + " entries ..."

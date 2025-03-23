@@ -44,16 +44,16 @@ func create_component():
 	)
 	var delete_button = Button.new()
 	delete_button.pressed.connect(func(): _handle_delete(container))
-	label_button.text = source_name
+	label_button.text = source_name.substr(0, 8) + ("" if source_name.length() < 8 else "...")
 	
 	
 	search_ended.connect(func():
-		label_button.text = source_name
+		label_button.text = source_name.substr(0, 8) + ("" if source_name.length() < 8 else "...")
 		ignore_button.disabled = false
 	)
 	
 	search_started.connect(func():
-		label_button.text = source_name + " (Indexing ...)"
+		label_button.text = source_name.substr(0, 8) + ("" if source_name.length() < 8 else "...") + " (Indexing ...)"
 		ignore_button.disabled = true
 	)
 	
